@@ -1,3 +1,4 @@
+import { EnumApi } from "@/enums";
 import { IProduct, IProductPrice, IProductStock } from "@/interfaces";
 import axios from "axios";
 
@@ -59,7 +60,7 @@ const ProductService: IProductService = {
 
 	getProductById(id: string): Promise<IProduct>
 	{
-		const url = `https://dummyjson.com/products/${id}`;
+		const url = `${EnumApi.GET_PRODUCTS}/${id}`;
 		return axios
 			.get(url)
 			.then((res) => {
@@ -73,7 +74,7 @@ const ProductService: IProductService = {
 
 	getAllProducts(): Promise<IProduct[]>
 	{
-		const url = `https://dummyjson.com/products`;
+		const url = EnumApi.GET_PRODUCTS;
 		return axios
 			.get(url)
 			.then((res) => {
