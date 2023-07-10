@@ -1,3 +1,5 @@
 export enum EnumRoutes {
-    PRODUCTS = "/products",
+	HOME = "/",
+	PRODUCTS = "/products",
+	PRODUCT_DETAIL = "/products/:productId",
 }
