@@ -6,6 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "strictNullChecks": false,
+    "paths": {
+      "@/*": ["src/*"],
+      "@mui/styled-engine": ["./node_modules/@mui/styled-engine-sc"]
+    },
+    "baseUrl": ".",
+    "esModuleInterop": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
