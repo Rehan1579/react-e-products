@@ -1,0 +1,21 @@
+html,
+body {
+    height: 100vh;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: inherit;
+}
+
+
+.lazyloading-indicator {
+    position: absolute !important;
+    inset: 0;
+
+
+    &.css-eglki6-MuiLinearProgress-root {
+        height: 3px;
+    }
+}
