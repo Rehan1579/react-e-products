@@ -10,8 +10,8 @@ export interface IProduct {
 	category: string;
 	thumbnail: string;
 	images: string[];
-	priceInfo: IProductPrice;
-	stockInfo: IProductStock;
+	priceInfo?: IProductPrice;
+	stockInfo?: IProductStock;
 }
 
 export interface IProductPrice {
