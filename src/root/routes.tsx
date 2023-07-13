@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import { ProductDetailPage, ProductListingPage } from "@/pages/products";
+import { ProductAddEditPage, ProductDetailPage, ProductListingPage } from "@/pages/products";
 import { ErrorPage, LayoutPage } from "@/pages/common";
 import LinearProgress from "@mui/material/LinearProgress";
 
@@ -24,6 +24,22 @@ const ROUTES = createBrowserRouter([
 				Component: () => (
 					<Suspense fallback={<LinearProgress className="lazyloading-indicator" />}>
 						<ProductDetailPage />
+					</Suspense>
+				),
+			},
+			{
+				path: "products/add",
+				Component: () => (
+					<Suspense fallback={<LinearProgress className="lazyloading-indicator" />}>
+						<ProductAddEditPage />
+					</Suspense>
+				),
+			},
+			{
+				path: "products/:productId/edit",
+				Component: () => (
+					<Suspense fallback={<LinearProgress className="lazyloading-indicator" />}>
+						<ProductAddEditPage />
 					</Suspense>
 				),
 			},
