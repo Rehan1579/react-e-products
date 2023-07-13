@@ -1,21 +1,24 @@
 import styles from "./product-detail-page.module.scss";
-import { useParams } from "react-router-dom";
-import { useQuery } from "react-query";
+import { useNavigate, useParams } from "react-router-dom";
 import { ProductService } from "@/services";
-import Backdrop from '@mui/material/Backdrop';
-import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useState } from "react";
 import { ProductCategory, ProductPricing, ProductRating, ProductStock } from "@/components/product";
+import { EBusyLoader } from "@/components/shared";
+import { EnumRoutes } from "@/enums";
+import { useQuery } from "@tanstack/react-query";
+import EditIcon from '@mui/icons-material/Edit';
+import IconButton from "@mui/material/IconButton";
 
 
 export default function ProductDetailPage()
 {
+	const navigate = useNavigate();
+
 	const [preview, setPreview] = useState<string>();
 	const onSetPreview = (imgSrc: string) => {
 		setPreview(imgSrc);
 	}
 
-	
 	const { productId } = useParams();
 	const { isLoading, isError, error, data: product } = useQuery(["product_detail", productId], () => ProductService.getProductById(productId));
 
@@ -27,14 +30,7 @@ export default function ProductDetailPage()
 	
     if (isLoading)
     {
-		return (
-			<Backdrop sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }} open={isLoading}>
-				<div className="d-flex flex-column align-items-center">
-					<CircularProgress />
-					<p>Getting Product Info</p>
-				</div>
-			</Backdrop>
-		);
+		return <EBusyLoader message="Getting Product Info" isLoading={isLoading} />;
 	}
 
 
@@ -45,8 +41,15 @@ export default function ProductDetailPage()
 	}
 
 
-	const handleCategoryClick = () => {
-		alert("Show products based on category: " + product.category);
+	const handleCategoryClick = (category: string) => {
+		const url = `${EnumRoutes.PRODUCTS}?category=${category}`;
+        navigate(url);
+	}
+
+
+	const handleEditClick = (id: string) => {
+		const url = EnumRoutes.EDIT_PRODUCT.replace(":productId", id);
+        navigate(url);
 	}
 
 
@@ -77,7 +80,11 @@ export default function ProductDetailPage()
 					<div className={`col ${styles.product_info}`}>
 						{product.category && (
 							<div className={styles.product_category}>
-								<ProductCategory product={product} onCategoryClick={handleCategoryClick} />
+								<ProductCategory product={product} handleCategoryClick={() => handleCategoryClick(product.category)} />
+
+								<IconButton edge="start" color="inherit" aria-label="back" onClick={() => handleEditClick(product.id)}>
+									<EditIcon style={{ color: "#1e1414" }} />
+								</IconButton>
 							</div>
 						)}
 
