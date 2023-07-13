@@ -6,7 +6,7 @@ import styled from "styled-components";
 interface IProductCategoryProps
 {
 	product: IProduct;
-    onCategoryClick?(): void;
+    handleCategoryClick?(): void;
 }
 
 
@@ -21,7 +21,7 @@ const ProductCategorySC = styled.div`
 export default function ProductCategory(props: IProductCategoryProps)
 {
     const { category } = props.product;
-    const handleCategoryClick = props.onCategoryClick;
+    const { handleCategoryClick } = props;
 
 
     return (
