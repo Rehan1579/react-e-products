@@ -1,17 +1,30 @@
 import { EnumApi } from "@/enums";
-import { IProduct, IProductPrice, IProductStock } from "@/interfaces";
+import { IProduct, IProductListing, IProductPrice, IProductStock } from "@/interfaces";
+import { IPagination } from "@/interfaces/IPagination";
 import axios from "axios";
 
 
 interface IProductService
 {
 	getProductById(id: string): Promise<IProduct>;
-	getAllProducts(): Promise<IProduct[]>;
+	getProducts(page: number): Promise<IProductListing>;
+	getProductsByCategory(page: number, category: string): Promise<IProductListing>;
+	searchProduct(value: string): Promise<IProductListing>;
+	getAllCategories(): Promise<string[]>;
+
+	newProduct(): Promise<IProduct>;
 
 	hasDiscount(product: IProduct): boolean;
 	hasStock(product: IProduct): boolean;
 	hasLowStock(product: IProduct): boolean;
 	getDiscountPrice(product: IProduct): number;
+}
+
+
+function mapProducts(data: any): IProduct[]
+{
+	const { products } = data;
+	return products.map((item: any) => mapProduct(item));
 }
 
 
@@ -55,7 +68,21 @@ function mapProduct(product: IProduct): IProduct
 }
 
 
+function mapPagination(data: any): IPagination
+{
+	const { total, skip, limit } = data;
+	const pagination: IPagination = {
+		total,
+		skip,
+		limit,
+		pages: Math.ceil(total / PAGE_LIMIT),
+		curPage: Math.floor(skip / PAGE_LIMIT) + 1
+	};
+	return pagination;
+}
 
+
+const PAGE_LIMIT = 20;
 const ProductService: IProductService = {
 
 	getProductById(id: string): Promise<IProduct>
@@ -72,19 +99,83 @@ const ProductService: IProductService = {
 	},
 
 
-	getAllProducts(): Promise<IProduct[]>
+	getProducts(page: number): Promise<IProductListing>
 	{
-		const url = EnumApi.GET_PRODUCTS;
+		const skip = Math.abs(page - 1) * PAGE_LIMIT;
+		const url = `${EnumApi.GET_PRODUCTS}?limit=${PAGE_LIMIT}&skip=${skip}`;
 		return axios
 			.get(url)
 			.then((res) => {
-				return res.data.products.map((item: any) => {
-					return mapProduct(item);
-				});
+				const pagination = mapPagination(res.data);
+				const products = mapProducts(res.data);
+
+				return <IProductListing>{
+					pagination,
+					products,
+				};
 			})
 			.catch((err) => {
 				throw new Error(err?.response?.data?.message || err.message);
 			});
+	},
+
+
+	getProductsByCategory(page: number, category: string): Promise<IProductListing>
+	{
+		const skip = Math.abs(page - 1) * PAGE_LIMIT;
+		const url = `${EnumApi.GET_PRODUCTS_BY_CATEGORIES}/${category}?limit=${PAGE_LIMIT}&skip=${skip}`;
+		return axios
+			.get(url)
+			.then((res) => {
+				const pagination = mapPagination(res.data);
+				const products = mapProducts(res.data);
+
+				return <IProductListing>{
+					pagination,
+					products,
+				};
+			})
+			.catch((err) => {
+				throw new Error(err?.response?.data?.message || err.message);
+			});
+	},
+
+
+	searchProduct(value: string): Promise<IProductListing>
+	{
+		return Promise.resolve(null);
+	},
+
+
+	getAllCategories(): Promise<string[]>
+	{
+		const url = EnumApi.GET_CATEGORIES;
+		return axios
+			.get(url)
+			.then((res) => {
+				return res.data;
+			})
+			.catch((err) => {
+				throw new Error(err?.response?.data?.message || err.message);
+			});
+	},
+
+
+	newProduct(): Promise<IProduct>
+	{
+		return Promise.resolve({
+			id: crypto.randomUUID(),
+			title: "",
+			description: "",
+			price: 0,
+			discountPercentage: 0,
+			rating: 0,
+			stock: 0,
+			brand: "",
+			category: "",
+			thumbnail: "",
+			images: []
+		});
 	},
 
 
